@@ -1,2 +1,2 @@
-# recipe-django-project
-a django project for managing recipes
+# E-commerce-website
+a django project for managing products
