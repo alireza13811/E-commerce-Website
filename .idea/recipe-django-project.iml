@@ -3,8 +3,8 @@
   <component name="FacetManager">
     <facet type="django" name="Django">
       <configuration>
-        <option name="rootFolder" value="$MODULE_DIR$/app" />
-        <option name="settingsModule" value="" />
+        <option name="rootFolder" value="$MODULE_DIR$" />
+        <option name="settingsModule" value="e_commerce/settings.py" />
         <option name="manageScript" value="manage.py" />
         <option name="environment" value="&lt;map/&gt;" />
         <option name="doNotUseTestRunner" value="false" />
@@ -14,7 +14,7 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Remote Python 3.9.12 Docker (recipe-django-project_app:latest)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (E-commerce-Website-n9Jee_PJ)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
