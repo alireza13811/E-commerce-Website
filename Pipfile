@@ -8,6 +8,16 @@ django = "*"
 python-decouple = "*"
 django-debug-toolbar = "*"
 psycopg2-binary = "*"
+dj-rest-auth = "*"
+djangorestframework = "*"
+markdown = "*"
+djoser = "*"
+djangorestframework-simplejwt = "*"
+django-rest-swagger = "*"
+drf-yasg = "*"
+social-auth-app-django = "*"
+django-allauth = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

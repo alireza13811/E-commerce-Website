@@ -18,7 +18,7 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     inventory = models.IntegerField()
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT, related_name='products')
-    promotions = models.ManyToManyField(Promotion, null=True)
+    promotions = models.ManyToManyField(Promotion, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
 
@@ -32,16 +32,20 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 
-class Wishlist(models.Model):
-    products = models.ManyToManyField(Product, models.SET_NULL)
-
-
 class Customer(models.Model):
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
     cart = models.OneToOneField(Cart, on_delete=models.PROTECT)
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    wishlist = models.OneToOneField(Wishlist, on_delete=models.PROTECT)
+
+
+class Wishlist(models.Model):
+    customer = models.OneToOneField(Customer, on_delete=models.PROTECT)
+
+
+class WishlistItem(models.Model):
+    products = models.ForeignKey(Product, models.CASCADE)
+    wishlist = models.ForeignKey(Wishlist, models.CASCADE)
 
 
 class Order(models.Model):
@@ -56,3 +60,10 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     data_created = models.DateTimeField(auto_now_add=True)
+
+
+class orderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)

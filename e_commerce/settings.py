@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 from decouple import config
 
@@ -36,8 +36,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
+    'rest_framework',
+    'drf_yasg',
+    'rest_framework.authtoken',
+    'djoser',
     'debug_toolbar',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     'core.apps.CoreConfig',
     'store.apps.StoreConfig'
@@ -56,10 +65,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'e_commerce.urls'
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,3 +142,64 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': 'auth/username/reset/confirm/{uid}/{token}',
+    'CONFIRMATION_URL': 'auth/confirm/{uid}/{token}',
+    'SEND_CONFIRMATION_EMAIL': True,
+    'SERIALIZERS': {
+        'user_create': 'core.serializers.UserCreateSerializer',
+        'user': 'core.serializers.UserSerializer',
+        'current_user': 'core.serializers.UserSerializer',
+    },
+    'EMAIL': {
+        'confirmation': 'core.emails.CustomConfirmationEmail'
+    },
+
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# for google authentication
+
+SITE_ID = 2
+LOGIN_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS =[
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+# Additional configuration settings
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+#SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+# SOCIAL_AUTH_POSTGRES_JSONFIELD = True # Optional, how token will be saved in DB
+
