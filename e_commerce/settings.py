@@ -38,13 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
+    'debug_toolbar',
     'rest_framework',
     'drf_yasg',
     'rest_framework.authtoken',
-    'djoser',
-    'debug_toolbar',
+    "corsheaders",
+    'dj_rest_auth',
+    'rest_framework_simplejwt',
     'allauth',
     'allauth.account',
+    'dj_rest_auth.registration',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 
@@ -53,6 +56,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -81,6 +85,8 @@ TEMPLATES = [
         },
     },
 ]
+# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/auth/social/google/callback/&prompt=consent&response_type=code&client_id=299085710094-0gqb2fsak8gg9mt0qmn320arer0n01hh.apps.googleusercontent.com&scope=openid%20email%20profile
+
 
 WSGI_APPLICATION = 'e_commerce.wsgi.application'
 
@@ -143,63 +149,42 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 
+SITE_ID = 2
+
+REST_USE_JWT = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
 }
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-}
 
-
-DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'auth/password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': 'auth/username/reset/confirm/{uid}/{token}',
-    'CONFIRMATION_URL': 'auth/confirm/{uid}/{token}',
-    'SEND_CONFIRMATION_EMAIL': True,
-    'SERIALIZERS': {
-        'user_create': 'core.serializers.UserCreateSerializer',
-        'user': 'core.serializers.UserSerializer',
-        'current_user': 'core.serializers.UserSerializer',
-    },
-    'EMAIL': {
-        'confirmation': 'core.emails.CustomConfirmationEmail'
-    },
-
-}
+JWT_AUTH_COOKIE = 'token'
+JWT_AUTH_REFRESH_COOKIE = 'refresh'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # for google authentication
+# SOCIALACCOUNT_PROVIDERS = {
+#     "google": {
+#         # For each OAuth based provider, either add a ``SocialApp``
+#         # (``socialaccount`` app) containing the required client
+#         # credentials, or list them here:
+#         "APP": {
+#             "client_id": config("GOOGLE_CLIENT_ID"),
+#             "secret": config("GOOGLE_SECRET_KEY"),
+#             "key": ""
+#         },
+#         # These are provider-specific settings that can only be
+#         # listed here:
+#         "SCOPE": [
+#             "profile",
+#             "email",
+#         ],
+#         "AUTH_PARAMS": {
+#             "access_type": "offline",
+#         }
+#     }}
 
-SITE_ID = 2
-LOGIN_REDIRECT_URL = '/'
-
-AUTHENTICATION_BACKENDS =[
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend'
-]
-# Additional configuration settings
-SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_LOGOUT_ON_GET= True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_EMAIL_REQUIRED = True
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
-
-#SOCIAL_AUTH_RAISE_EXCEPTIONS = False
-# SOCIAL_AUTH_POSTGRES_JSONFIELD = True # Optional, how token will be saved in DB
-
+CORS_ORIGIN_ALLOW_ALL = True

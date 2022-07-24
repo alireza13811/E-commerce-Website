@@ -8,7 +8,6 @@ django = "*"
 python-decouple = "*"
 django-debug-toolbar = "*"
 psycopg2-binary = "*"
-dj-rest-auth = "*"
 djangorestframework = "*"
 markdown = "*"
 djoser = "*"
@@ -23,3 +22,6 @@ django-cors-headers = "*"
 
 [requires]
 python_version = "3.8"
+
+[packages.dj-rest-auth]
+extras = [ "with-social",]
