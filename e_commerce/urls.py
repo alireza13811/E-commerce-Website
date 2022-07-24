@@ -18,7 +18,8 @@ from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from core.views import GoogleLogin, GoogleCallBackView
+from core.views import GoogleLogin, GoogleCallBackView, GoogleAuthentication
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -40,15 +41,9 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
-    # re_path(r'^auth/activate/(?P<uid>[\w-]+)/(?P<token>[\w-]+)/$', UserActivationView.as_view()),
-    # re_path(r'^auth/confirm/(?P<uid>[\w-]+)/(?P<token>[\w-]+)/$', PostToConfirmEmail.as_view(), name='confirm_email'),
-    # path('auth/user/confirmation/', ConfirmEmailView.as_view()),
-    # path('auth/', include('djoser.urls')),
-    # path('auth/', include('djoser.urls.jwt')),
-    # path('auth/', include('djoser.social.urls')),
-    # path('auth/social/register/', RedirectSocial.as_view()),
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     re_path(r'^auth/social/google/callback/', GoogleCallBackView.as_view()),
-    path('auth/social/google/', GoogleLogin.as_view(), name='google_login')
+    path('auth/social/google/login', GoogleLogin.as_view(), name='google_login'),
+    path('auth/social/google/authentication', GoogleAuthentication.as_view())
 ]

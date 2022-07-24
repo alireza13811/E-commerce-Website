@@ -85,7 +85,7 @@ TEMPLATES = [
         },
     },
 ]
-# https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http://localhost:8000/auth/social/google/callback/&prompt=consent&response_type=code&client_id=299085710094-0gqb2fsak8gg9mt0qmn320arer0n01hh.apps.googleusercontent.com&scope=openid%20email%20profile
+#
 
 
 WSGI_APPLICATION = 'e_commerce.wsgi.application'
@@ -165,26 +165,8 @@ JWT_AUTH_REFRESH_COOKIE = 'refresh'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# for google authentication
-# SOCIALACCOUNT_PROVIDERS = {
-#     "google": {
-#         # For each OAuth based provider, either add a ``SocialApp``
-#         # (``socialaccount`` app) containing the required client
-#         # credentials, or list them here:
-#         "APP": {
-#             "client_id": config("GOOGLE_CLIENT_ID"),
-#             "secret": config("GOOGLE_SECRET_KEY"),
-#             "key": ""
-#         },
-#         # These are provider-specific settings that can only be
-#         # listed here:
-#         "SCOPE": [
-#             "profile",
-#             "email",
-#         ],
-#         "AUTH_PARAMS": {
-#             "access_type": "offline",
-#         }
-#     }}
+SOCIAL_AUTH_GOOGLE_OAUTH2_ID = config('GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_SECRET_KEY')
+SOCIAL_AUTH_GOOGLE_REDIRECT_URI = 'http://localhost:8000/auth/social/google/callback/'
 
 CORS_ORIGIN_ALLOW_ALL = True
