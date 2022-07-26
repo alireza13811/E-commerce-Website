@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -149,10 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 
-SITE_ID = 2
-
-REST_USE_JWT = True
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
@@ -160,11 +157,39 @@ REST_FRAMEWORK = {
 }
 
 
-JWT_AUTH_COOKIE = 'token'
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+REST_AUTH_SERIALIZERS ={
+    'USER_DETAILS_SERIALIZER': 'core.serializers.CustomUserDetailsSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'core.serializers.CustomRegisterSerializer',
+}
+
+SITE_ID = 2
+
+REST_SESSION_LOGIN = False
+REST_USE_JWT = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+LOGIN_REDIRECT_URL = 'http://localhost:8000/auth/login'
+
+JWT_AUTH_COOKIE = 'access'
 JWT_AUTH_REFRESH_COOKIE = 'refresh'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# google auth
 SOCIAL_AUTH_GOOGLE_OAUTH2_ID = config('GOOGLE_CLIENT_ID')
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('GOOGLE_SECRET_KEY')
 SOCIAL_AUTH_GOOGLE_REDIRECT_URI = 'http://localhost:8000/auth/social/google/callback/'

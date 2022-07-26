@@ -18,8 +18,6 @@ from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from core.views import GoogleLogin, GoogleCallBackView, GoogleAuthentication
-
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -41,9 +39,6 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
+    path('auth/', include('core.urls')),
     path('auth/', include('dj_rest_auth.urls')),
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    re_path(r'^auth/social/google/callback/', GoogleCallBackView.as_view()),
-    path('auth/social/google/login', GoogleLogin.as_view(), name='google_login'),
-    path('auth/social/google/authentication', GoogleAuthentication.as_view())
 ]
