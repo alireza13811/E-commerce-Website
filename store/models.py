@@ -10,6 +10,9 @@ class Promotion(models.Model):
 class Collection(models.Model):
     title = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.title
+
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
@@ -21,22 +24,25 @@ class Product(models.Model):
     promotions = models.ManyToManyField(Promotion, blank=True)
     last_update = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
+
+
+class Customer(models.Model):
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+
 
 class Cart(models.Model):
     data_created = models.DateTimeField(auto_now_add=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True)
 
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     quantity = models.PositiveSmallIntegerField()
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-
-class Customer(models.Model):
-    phone = models.CharField(max_length=255)
-    birth_date = models.DateField(null=True, blank=True)
-    cart = models.OneToOneField(Cart, on_delete=models.PROTECT)
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
 
 class Wishlist(models.Model):
@@ -62,8 +68,8 @@ class Order(models.Model):
     data_created = models.DateTimeField(auto_now_add=True)
 
 
-class orderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2)

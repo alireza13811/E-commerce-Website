@@ -41,4 +41,5 @@ urlpatterns = [
     path('__debug__/', include('debug_toolbar.urls')),
     path('auth/', include('core.urls')),
     path('auth/', include('dj_rest_auth.urls')),
+    path('store/', include('store.urls')),
 ]

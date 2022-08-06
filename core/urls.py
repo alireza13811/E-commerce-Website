@@ -1,10 +1,10 @@
 from django.urls import path, include, re_path
-
-from .views import GoogleCallBackView, GoogleLogin, GoogleAuthentication, ConfirmationEmailView
 from dj_rest_auth.views import PasswordResetConfirmView
+from .views import GoogleCallBackView, GoogleLogin, GoogleAuthentication, ConfirmationEmailView, CustomRegisterView
 
 
 urlpatterns = [
+    path('registration/', CustomRegisterView.as_view()),
     re_path(r'^registration/confirm-email/(?P<key>[-:\w]+)/$', ConfirmationEmailView.as_view()),
     path('registration/', include('dj_rest_auth.registration.urls')),
     re_path(r'^social/google/callback/', GoogleCallBackView.as_view()),
