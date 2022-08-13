@@ -33,6 +33,8 @@ class Customer(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.user.first_name
 
 class Cart(models.Model):
     data_created = models.DateTimeField(auto_now_add=True)
