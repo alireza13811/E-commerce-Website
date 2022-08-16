@@ -1,5 +1,7 @@
 from django.db.models import Count
 from django.http import HttpResponseRedirect
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -8,18 +10,31 @@ from rest_framework.views import APIView
 from rest_framework.reverse import reverse
 from rest_framework.mixins import UpdateModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+import logging
 from . import serializers
 from . import models
 from .permissions import IsAdminOrReadOnly, IsCustomerOfThisUser, IsCartOfThisUser
 from .filters import ProductFilter
 from .pagination import DefaultPagination
 
+logger = logging.getLogger(__name__)
+
+
+class ProductImageViewSet(ModelViewSet):
+    serializer_class = serializers.ProductImageSerializer
+
+    def get_queryset(self):
+        return models.ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
+
+    def get_serializer_context(self):
+        return {'product_id': self.kwargs['product_pk']}
+
 
 class ProductViewSet(ModelViewSet):
     serializer_class = serializers.ProductSerializer
-    queryset = models.Product.objects.all()
+    queryset = models.Product.objects.prefetch_related('images').all()
     pagination_class = DefaultPagination
     permission_classes = [IsAdminOrReadOnly]
     search_fields = ['title', 'description']
@@ -27,9 +42,15 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
 
+    @method_decorator(cache_page(60 * 2))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     def destroy(self, request, *args, **kwargs):
+        logger.info('Destroying Product')
         if models.OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
-            return Response({'error': 'Product cannot be deleted because it is associated with an order item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({'error': 'Product cannot be deleted because it is associated with an order item.'},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
 
@@ -41,7 +62,8 @@ class CollectionViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         if models.Product.objects.filter(collection_id=kwargs['pk']):
-            return Response({'error': 'Collection cannot be deleted because it includes one or more products.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({'error': 'Collection cannot be deleted because it includes one or more products.'},
+                            status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
 
@@ -122,4 +144,3 @@ class OrderViewSet(ModelViewSet):
         if self.request.method == 'POST':
             return serializers.AddOrderSerializer
         return serializers.ViewOrderSerializer
-

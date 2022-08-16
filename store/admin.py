@@ -5,6 +5,16 @@ from django.db.models.aggregates import Count
 from . import models
 
 
+class ProductImageInline(admin.TabularInline):
+    model = models.ProductImage
+    readonly_fields = ['thumbnail']
+
+    def thumbnail(self, instance):
+        if instance.image.name:
+            return format_html(f'<img src="{instance.image.url}" class="thumbnail " />')
+        return ''
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     autocomplete_fields = ['collection']
@@ -19,6 +29,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['collection']
     search_fields = ['title']
+    inlines = [ProductImageInline]
 
     def collection_title(self, product):
         return product.collection.title
@@ -38,6 +49,10 @@ class ProductAdmin(admin.ModelAdmin):
             messages.SUCCESS
         )
 
+    class Media:
+        css = {
+            'all': ['store/style.css']
+        }
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):

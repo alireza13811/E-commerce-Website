@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from .validators import validate_file_size
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -28,6 +28,14 @@ class Product(models.Model):
         return self.title
 
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(
+        upload_to='store/images',
+        validators=[]
+    )
+
+
 class Customer(models.Model):
     phone = models.CharField(max_length=255, null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -35,6 +43,7 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.user.first_name
+
 
 class Cart(models.Model):
     data_created = models.DateTimeField(auto_now_add=True)
