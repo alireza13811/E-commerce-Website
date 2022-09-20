@@ -133,3 +133,7 @@ dmypy.json
 *.pyc
 /media/
 /static/
+/templates/
+
+.idea
+
